@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="OpenSubdiv::@OPENSUBDIV_VERSION@::Vtr::ConstArray&lt;*&gt;">
+      <DisplayString>"{{ {"$T1"} size={_size} }}</DisplayString>
+      <Expand>
+          <ArrayItems>
+              <Size>_size</Size>
+              <ValuePointer>_begin</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+
+  <Type Name="OpenSubdiv::@OPENSUBDIV_VERSION@::Vtr::Array&lt;*&gt;">
+      <DisplayString>"{{ {"$T1"} size={_size} }}</DisplayString>
+      <Expand>
+          <ArrayItems Condition="_size > 0">
+              <Size>_size</Size>
+              <ValuePointer>_begin</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+
+  <Type Name="OpenSubdiv::@OPENSUBDIV_VERSION@::Vtr::internal::StackBuffer&lt;*,*,*&gt;">
+      <DisplayString>{{ {"$T1"} static_size={$T2} capacity={_capacity} size={_size} }}</DisplayString>  
+      <Expand>
+          <ArrayItems Condition="_size > 0">
+              <Size>_size</Size>
+              <ValuePointer>_data</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+
+</AutoVisualizer>
