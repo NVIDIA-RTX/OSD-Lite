@@ -3,12 +3,15 @@
 
 ## Overview
 
-A light-weight fork of the OpenSubdiv. Contains all the topology processing logic
-(Sdc/Vtr/Far layers), but none of the compute/rasterization back-ends (Osd layer).
+A light-weight fork of the [OpenSubdiv](https://github.com/PixarAnimationStudios/OpenSubdiv)
+project. Contains all the topology processing logic (Sdc/Vtr/Far layers), but none of the
+compute/rasterization back-ends (Osd layer).
 
 Also includes 'Tmr' : the Topology Map Representation layer with support for topology
 hashing.
 (see http://www.graphics.stanford.edu/~niessner/papers/2016/4subdiv/brainerd2016efficient.pdf)
+
+This library is used in the [RTXMG example](https://github.com/NVIDIA-RTX/RTXMG).
 
 ## Requirements
 
@@ -43,11 +46,13 @@ hashing.
    ```bash
    cmake --build . --config Release --target package
    ```
-**_Note:_** it is possible to generate a packaged build with both debug and release
-binaries, but the process requires multiple steps. See the 'build_and_package.sh`
-script for details.
+> [!NOTE]
+> It is possible to generate a packaged build with both debug and release
+> binaries, but the process requires multiple steps. See the 'build_and_package.sh`
+> script for details.
 
-**_Note:_** 32 bits builds are not supported
+> [!WARNING]
+> 32 bits builds are not supported
 
 ## Integration
 
@@ -56,11 +61,13 @@ are provided for either static or dynamic linking:
 - osd::osd_lite_static
 - osd::osd_lite_shared
 
-**_Note:_** OSD_Lite automatically exports cmake configuration files, so it should
-never be necessary to write custom CMake `Find` modules.
+> [!TIP]
+> OSD_Lite automatically exports cmake configuration files, so it should
+> never be necessary to write custom CMake `Find` modules.
 
-**_Note:_** the `osd::` namespace is only pre-fixed when using the "exported" build
-of the library through `find_package`. If OSD_Lite is imported via git submodule or
-CMake's `FetchContent` mechanism, the `osd::` prefix should not be used to name 
-OSD_Lite dependencies (this appears to be a somewhat inconsistent policy of CMake's
-EXPORT feature that may change in the future).
+> [!TIP]
+> The `osd::` namespace is only pre-fixed when using the "exported" build
+> of the library through `find_package`. If OSD_Lite is imported via git submodule or
+> CMake's `FetchContent` mechanism, the `osd::` prefix should not be used to name 
+> OSD_Lite dependencies (this appears to be a somewhat inconsistent policy of CMake's
+> EXPORT feature that may change in the future).
