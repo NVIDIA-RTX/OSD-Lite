@@ -70,7 +70,7 @@ endif()
 
 add_subdirectory(opensubdiv)
 
-install(FILES "LICENSE.TXT" "NOTICE.TXT" DESTINATION ".")
+install(FILES "LICENSE.txt" "NOTICE.txt" DESTINATION ".")
 
 export(EXPORT "osd_lite_targets" FILE "${CMAKE_CURRENT_BINARY_DIR}/osd_liteTargets.cmake")
 
