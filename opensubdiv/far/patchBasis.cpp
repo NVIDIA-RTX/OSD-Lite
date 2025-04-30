@@ -273,6 +273,17 @@ namespace {
     void
     computeCreaseMatrix(REAL sharpness, REAL t, REAL m[16]) {
 
+        // checking against <REAL>::min() instead of (REAL)0.0 to capture single-
+        // crease patches that may have been modified by dynamic adaptive feature
+        // isolation (see SingleCreaseDynamicIsolation for details)
+        if (sharpness <= std::numeric_limits<REAL>::min()) {
+            m[ 0]=(REAL)1.0;  m[ 1]=(REAL)0.0;  m[ 2]=(REAL)0.0;  m[ 3]=(REAL)0.0;
+            m[ 4]=(REAL)0.0;  m[ 5]=(REAL)1.0;  m[ 6]=(REAL)0.0;  m[ 7]=(REAL)0.0;
+            m[ 8]=(REAL)0.0;  m[ 9]=(REAL)0.0;  m[10]=(REAL)1.0;  m[11]=(REAL)0.0;
+            m[12]=(REAL)0.0;  m[13]=(REAL)0.0;  m[14]=(REAL)0.0;  m[15]=(REAL)1.0;
+            return;
+        }
+
         REAL sharpFloor = (REAL)floor(sharpness),
              sharpCeil = sharpFloor + 1,
              sharpFrac = sharpness - sharpFloor;

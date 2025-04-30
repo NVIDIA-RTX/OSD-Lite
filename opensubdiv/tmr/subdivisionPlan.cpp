@@ -39,6 +39,64 @@ namespace OPENSUBDIV_VERSION {
 namespace Tmr {
 
 //
+ // The combination of dynamic isolation and single-crease patch optimizations
+ // can introduce discontinuities in the limit surface along boundaries with
+ // end-cap patches. The `SingleCreaseDynamicISolation` enum controls the
+ // desired behavior of the limit surface as follows:
+ // 
+ //  - Smooth mode : local edge sharpness of single-crease patches is forcibly
+ //    lowered in order to maintain continuity with the limit surface of
+ //    neighboring end-cap patches. Effectively, the limit surface starts
+ //    ignoring semi-sharp tags in areas where the level of feature isolation
+ //    is dynamically lowered.
+ // 
+ //  - Sharp mode : edge sharpness of single-crease patches is always enforced,
+ //    regardless of dynamic isolation. The consequence is that single-crease 
+ //    patches neighboring an end-cap patch from a lower level of isolation will
+ //    cause a discontinuity in the limit surface. Semi-sharp edge tags are
+ //    maintained, but neighboring dynamically isolated patches will show
+ //    discontinuities.
+ //
+ // note: dynamic isolation should always be performed at the micro-vertex
+ // or edge-level. Inconsistent dynamic isolation levels across neighboring
+ // surfaces will cause limit surface discontinuities.
+ //
+ // note: this option is currently set at compile-time and can be set with
+ // the definition of TMR_SINGLE_CREASE_DYNAMIC_ISOLATION. This decision may be
+ // revisited if valid use-cases can be made for a run-time selection.
+ 
+ #ifndef TMR_SINGLE_CREASE_DYNAMIC_ISOLATION
+     #define TMR_SINGLE_CREASE_DYNAMIC_ISOLATION SMOOTH
+ #endif
+ 
+ enum class SingleCreaseDynamicIsolation : uint8_t { SHARP = 0, SMOOTH = 1, };    
+ 
+ static constexpr SingleCreaseDynamicIsolation const
+     single_crease_dynamic_isolation = SingleCreaseDynamicIsolation::TMR_SINGLE_CREASE_DYNAMIC_ISOLATION;
+ 
+ template <typename REAL> REAL
+ computeSingleCreaseSharpness(
+     SubdivisionPlan::Node const& n, NodeDescriptor const& desc, short depth, int level) {
+ 
+     using enum SingleCreaseDynamicIsolation;
+ 
+     if constexpr (single_crease_dynamic_isolation == SHARP) {
+         return desc.HasSharpness() ? n.GetSharpness() : (REAL)0.0;
+     } else if constexpr (single_crease_dynamic_isolation == SMOOTH) {
+         if (desc.HasSharpness()) {
+             REAL sharpness = n.GetSharpness();
+             // single-crease patches require a non-null boundary mask and sharpness > 0.f
+             // std::numeric_limits::min() ensures EvalBasisBSpline() evaluates the crease
+             // matrix
+             return std::max(std::numeric_limits<REAL>::min(),
+                 sharpness + ((REAL)level - ((REAL)depth + sharpness)));
+         }
+         return REAL(0);
+     } else
+         static_assert(false, "Invalid single crease dynamic isolation mode");
+ }
+
+//
 // Subdivision Plan Node
 //
 
@@ -264,7 +322,7 @@ SubdivisionPlan::evaluateBasis(REAL s, REAL t, REAL wP[],
 
             case NODE_REGULAR : {
                 param.Set(INDEX_INVALID, u, v, depth, nonQuad, desc.GetBoundaryMask(), 0, true);
-                float sharpness = desc.HasSharpness() ? n.GetSharpness() : 0.f;
+                REAL sharpness = computeSingleCreaseSharpness<REAL>(n, desc, depth, level);   
                 Far::internal::EvaluatePatchBasis<REAL>(regularBasis, param, s, t, wP, wDs, wDt, wDss, wDst, wDtt, sharpness);
             } break;
 
