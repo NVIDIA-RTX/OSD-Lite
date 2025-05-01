@@ -89,7 +89,7 @@ namespace Tmr {
              // std::numeric_limits::min() ensures EvalBasisBSpline() evaluates the crease
              // matrix
              return std::max(std::numeric_limits<REAL>::min(),
-                 sharpness + ((REAL)level - ((REAL)depth + sharpness)));
+                 + std::min(sharpness, (REAL)level - (REAL)depth));
          }
          return REAL(0);
      } else
