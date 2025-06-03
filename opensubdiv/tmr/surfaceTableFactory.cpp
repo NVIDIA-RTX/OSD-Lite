@@ -247,7 +247,7 @@ SurfaceTableFactory::Create(TopologyRefiner const& refiner,
             uint8_t edgeAdjacency = computeEdgeAdjacencyBits(level, faceIndex, regFaceSize);
             uint8_t paramRotation = fvlevel && options.depTable ?
                 computeFvarRot(options.depTable->GetDescriptor(surfIndex), startingEdge, regFaceSize) : startingEdge;
-            surfaceTable->descriptors[surfIndex].Set(firstControlPoint, planIndex, paramRotation, topologyMapID);
+            surfaceTable->descriptors[surfIndex].Set(firstControlPoint, planIndex, paramRotation, edgeAdjacency, topologyMapID);
         } else {
             // note: the sub-faces of an irregular face share the same set of control points (the 
             // 'firstControlPoint' offset is the same for all the descriptors)
