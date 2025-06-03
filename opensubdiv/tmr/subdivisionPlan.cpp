@@ -92,8 +92,10 @@ namespace Tmr {
                  + std::min(sharpness, (REAL)level - (REAL)depth));
          }
          return REAL(0);
-     } else
-         static_assert(false, "Invalid single crease dynamic isolation mode");
+     } 
+     
+     static_assert(single_crease_dynamic_isolation == SHARP || 
+         single_crease_dynamic_isolation == SMOOTH, "Invalid single crease dynamic isolation mode");
  }
 
 //
