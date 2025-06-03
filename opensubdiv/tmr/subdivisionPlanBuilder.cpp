@@ -1025,8 +1025,8 @@ std::unique_ptr<SubdivisionPlan>
 SubdivisionPlanBuilder::Create(Sdc::SchemeType scheme, Sdc::Options schemeOptions, 
     Options const& options, Neighborhood const& neighborhood, LocalIndex subfaceIndex) {
 
-    for (int level = 0; level < kNumLevels; ++level)
-        _protoNodeStore[level].clear();
+    for (auto& store : _protoNodeStore)
+        store.clear();
 
     if (subfaceIndex == 0) {
 

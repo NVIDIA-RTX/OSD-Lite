@@ -103,16 +103,16 @@ public:
         EndCapType getEndCapType() const;
         void setEndCapType(EndCapType t);
 
-        uint8_t value() const {
-            static_assert(sizeof(Traits) == sizeof(uint8_t));
-            return *reinterpret_cast<uint8_t const*>(this); 
+        union {
+            struct {
+                uint8_t scheme : 1;
+                uint8_t vtxBoundInterp : 2;
+                uint8_t creasingMethod : 1;
+                uint8_t triangleSub : 1;
+                uint8_t endcapType : 2;
+            };
+            uint8_t value;
         };
-
-        uint8_t scheme : 1;
-        uint8_t vtxBoundInterp : 2;
-        uint8_t creasingMethod : 1;
-        uint8_t triangleSub : 1;
-        uint8_t endcapType : 2;
     };
 
     struct Options {
@@ -232,7 +232,7 @@ private:
 inline void 
 TopologyMap::Traits::SetCompatible(Sdc::SchemeType schemeType,
     Sdc::Options schemeOptions, EndCapType endcapType, bool faceVarying) {
-
+    value = 0;
     setSchemeType(schemeType);   
     if (faceVarying)
         setVtxBoundaryInterpolation(schemeOptions.GetFVarLinearInterpolation());
