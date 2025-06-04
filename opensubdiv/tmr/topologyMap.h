@@ -270,6 +270,8 @@ TopologyMap::Traits::setVtxBoundaryInterpolation(Sdc::Options::FVarLinearInterpo
         case FVAR_LINEAR_NONE:
             vtxBoundInterp = uint8_t(VTX_BOUNDARY_EDGE_ONLY); break;
         case FVAR_LINEAR_CORNERS_ONLY:
+        case FVAR_LINEAR_CORNERS_PLUS1:
+        case FVAR_LINEAR_CORNERS_PLUS2:
         case FVAR_LINEAR_BOUNDARIES: 
             vtxBoundInterp = uint8_t(VTX_BOUNDARY_EDGE_AND_CORNER); break;
         default:

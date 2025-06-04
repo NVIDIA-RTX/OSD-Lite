@@ -404,7 +404,7 @@ NeighborhoodBuilder::gatherFVarTopology(BuildDescriptor const& desc) {
     Sdc::Options::FVarLinearInterpolation fvarOptions = fvlevel.getOptions().GetFVarLinearInterpolation();
 
     bool fvarCornersAreSharp = (fvarOptions > (scheme == Sdc::SCHEME_CATMARK ?
-        Sdc::Options::FVAR_LINEAR_NONE : Sdc::Options::FVAR_LINEAR_CORNERS_ONLY));
+        Sdc::Options::FVAR_LINEAR_NONE : Sdc::Options::FVAR_LINEAR_CORNERS_PLUS2));
     bool hasLinearBoundaries = (fvarOptions == Sdc::Options::FVAR_LINEAR_BOUNDARIES);
 
     ConstIndexArray fverts = level.getFaceVertices(desc.faceIndex);
@@ -507,18 +507,31 @@ NeighborhoodBuilder::gatherFVarTopology(BuildDescriptor const& desc) {
             addCorner(valueIndex, Sdc::Crease::SHARPNESS_INFINITE);
         }
 
+        if (fvarOptions == Sdc::Options::FVAR_LINEAR_CORNERS_PLUS1 ||
+            fvarOptions == Sdc::Options::FVAR_LINEAR_CORNERS_PLUS2) {
+            if (fvtag._mismatch) {
+                if (fvtag._depSharp && fvtag._semiSharp) {
+                    // dependent sharpness : see FVarLevel::completeTopologyFromFaceValues
+                    vtag._infSharp = true;
+                } else {
+                    if (!fvtag._semiSharp)
+                        vtag._infSharp |= !fvtag._crease;
+                }
+            }
+        }
+
         if (vtag._semiSharp || vtag._infSharp) {
             if (fvarCornersAreSharp) {
                 // if fvarCornersAreSharp, the assumption is that boundaries are implicitly
                 // infinitely sharp and should not be tagged.
                 if (!vtag._boundary) {
-                    float sharpness = vtag._infSharp ?
-                        Sdc::Crease::SHARPNESS_INFINITE : level.getVertexSharpness(vertIndex);
-                    assert(sharpness > 0.f);
-                    addCorner(valueIndex, level.getVertexSharpness(vertIndex));
+                    addCorner(valueIndex, vtag._infSharp ?
+                        Sdc::Crease::SHARPNESS_INFINITE : level.getVertexSharpness(vertIndex));
                 }
-            } else
-                addCorner(valueIndex, level.getVertexSharpness(vertIndex));
+            } else {
+                addCorner(valueIndex, vtag._infSharp ?
+                    Sdc::Crease::SHARPNESS_INFINITE : level.getVertexSharpness(vertIndex));
+            }
         }
 
         vtagBits |= vtag.getBits();
