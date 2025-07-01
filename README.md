@@ -71,3 +71,10 @@ are provided for either static or dynamic linking:
 > CMake's `FetchContent` mechanism, the `osd::` prefix should not be used to name 
 > OSD_Lite dependencies (this appears to be a somewhat inconsistent policy of CMake's
 > EXPORT feature that may change in the future).
+
+## Additional Resources
+
+* Regression: tests: https://github.com/NVIDIA-RTX/OSD-Lite-Regressions
+* Tutorials: https://github.com/NVIDIA-RTX/OSD-Lite-Tutorials
+* Maya tagged OBJ plugin: https://github.com/NVIDIA-RTX/OSD-Lite-Maya-Exporter
+
